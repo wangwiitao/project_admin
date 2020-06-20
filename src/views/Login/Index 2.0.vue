@@ -50,13 +50,12 @@
 </template>
 
 <script>
-import { reactive,ref } from "@vue/composition-api"
 import {stripscript,validateEmail,validatePass,validateVcode} from "@/utils/validate"
 export default {
   name: "Login",
-  setup(props,{refs}){
-      //验证用户名
-    let validateUsername = (rule, value, callback) => {
+  data() {
+    //验证用户名
+    var validateUsername = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入用户名"));
       } else if(validateEmail(value)){
@@ -67,9 +66,9 @@ export default {
       }
     };
     //验证密码
-    let validatePassword = (rule, value, callback) => {
-      ruleForm.password = stripscript(value)
-      value = ruleForm.password
+    var validatePassword = (rule, value, callback) => {
+      this.ruleForm.password = stripscript(value)
+      value = this.ruleForm.password
       // console.log(stripscript(value))
 
       if (value === "") {
@@ -81,24 +80,24 @@ export default {
       }
     };
     //重复密码
-    let validatePasswords = (rule, value, callback) => {
-      if(model.value=login){ callback()}
-      ruleForm.passwords = stripscript(value)
-      value = ruleForm.passwords
+    var validatePasswords = (rule, value, callback) => {
+      if(this.model=login){ callback()}
+      this.ruleForm.passwords = stripscript(value)
+      value = this.ruleForm.passwords
       // console.log(stripscript(value))
 
       if (value === "") {
         callback(new Error("请输入密码"));
-      } else if (value!==ruleForm.password) {
+      } else if (value!==this.ruleForm.password) {
         callback(new Error("两次密码不一致"));
       } else {
         callback();
       }
     };
     //验证码
-     let validateCode = (rule, value, callback) => {
-      ruleForm.code = stripscript(value)
-      value = ruleForm.code
+     var validateCode = (rule, value, callback) => {
+      this.ruleForm.code = stripscript(value)
+      value = this.ruleForm.code
       if (value === "") {
         return callback(new Error("验证码不能为空"));
       }else if (validateVcode(value)){
@@ -107,33 +106,36 @@ export default {
         callback()
       }
     };
-    const  ruleForm = reactive({
+    return {
+      ruleForm: {
         username: "",
         password: "",
         passwords: "",
         code: ""
-      })
-      const rules = reactive({
+      },
+      model:'register',
+      rules: {
         username: [{ validator: validateUsername, trigger: "blur" }],
         password: [{ validator: validatePassword, trigger: "blur" }],
         passwords: [{ validator: validatePasswords, trigger: "blur" }],
         code: [{ validator: validateCode, trigger: "blur" }]
-      })
-    const menuTab = reactive([
+      },
+      menuTab: [
         { txt: "登录", current: false ,type:'login'},
         { txt: "注册", current: true ,type:'register'}
-      ])
-      const model = ref('login')
-      console.log(model.value)
-      const toggleMenu = (data=>{
-        menuTab.forEach(elem => {
+      ]
+    };
+  },
+  methods: {
+    toggleMenu(data) {
+      this.menuTab.forEach(elem => {
         elem.current = false;
       });
       data.current = true;
-      model.value = data.type
-      })
-    const submitForm = (formName=>{
-        refs[formName].validate(valid => {
+      this.model = data.type
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           alert("submit!");
         } else {
@@ -141,16 +143,8 @@ export default {
           return false;
         }
       });
-    })
-    return {
-      menuTab,
-      model,
-      toggleMenu,
-      submitForm,
-      ruleForm,
-      rules
     }
-  },
+  }
 };
 </script>
 <style lang="scss" scoped>
