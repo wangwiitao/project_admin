@@ -59,6 +59,16 @@ module.exports = {
     hot: true, // 开启热加载
     hotOnly: false,
     proxy: null, // 设置代理
+    proxy: {
+      '/devapi': {    //将www.exaple.com印射为/apis
+          target: 'http://www.web-jshtml.cn/dependenciesapi',  // 接口域名
+          secure: false,  // 如果是https接口，需要配置这个参数
+          changeOrigin: true,  //是否跨域
+          pathRewrite: {
+              '^/devapi': ''   //需要rewrite的,
+          } 
+        }             
+      },
     overlay: { // 全屏模式下是否显示脚本错误
       warnings: true,
       errors: true
