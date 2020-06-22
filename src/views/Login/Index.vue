@@ -51,7 +51,7 @@
           <el-row :gutter="10">
             <el-col :span="15">
               <div class="grid-content bg-purple">
-                <el-input id="validate" v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input>
+                <el-input id="validate" v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
               </div>
             </el-col>
             <el-col :span="9">
@@ -80,7 +80,8 @@
 </template>
 
 <script>
-import { GetSms, Register } from "@/api/login";
+import sha1 from 'js-sha1';
+import { GetSms, Register, Login } from "@/api/login";
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import {
   stripscript,
@@ -145,7 +146,7 @@ export default {
       }
     };
     const ruleForm = reactive({
-      username: "",
+      username: "samsenwwt@gmail.com",
       password: "",
       passwords: "",
       code: ""
@@ -180,8 +181,18 @@ export default {
       });
       data.current = true;
       model.value = data.type;
-      refs.loginForm.resetFields();
+      resetFormData();
+      clearCountDown();
     };
+    const resetFormData = (()=>{
+      refs.loginForm.resetFields();
+    })
+    // 更新按钮状态
+    const updataButtonStatus = ((params)=>{
+      codeButtonStatus.status = params.status;
+      codeButtonStatus.text = params.text;
+
+    })
     // 获取验证码
     const getSms = () => {
       if (ruleForm.username == "") {
@@ -199,7 +210,11 @@ export default {
         module: model.value
       };
       //获取验证码按钮状态
-      codeButtonStatus.status = true;
+      // codeButtonStatus.status = true;
+      updataButtonStatus({
+        status:true,
+        text:'发送中'
+      })
 
       GetSms(requestData)
         .then(response => {
@@ -210,7 +225,7 @@ export default {
           });
           loginButtonStatus.value = false;
           console.log(data);
-          countDown(5);
+          countDown(60);
         })
         .catch(error => {
           console.log(error);
@@ -219,33 +234,65 @@ export default {
 
     // 提交表单
     const submitForm = formName => {
-      refs[formName].validate(valid => {
+      // return false;
+      refs[formName].validate((valid) => {
         if (valid) {
           // alert("submit!");
-          let requseData = {
-            username: ruleForm.username,
-            password: ruleForm.password,
-            code: ruleForm.code,
-            module: "register"
-          };
-          Register(requseData)
-            .then(response => {
-              // console.log(response)
-              let data = response.data;
-              root.$message({
-                message: data.message,
-                type: "success"
-              });
-            })
-            .catch(error => {});
+          model.value === "login" ? login() : register();
+          
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     };
+
+    // 登录
+    const login = (() => {
+      let requestData = {
+        username: ruleForm.username,
+        password: sha1(ruleForm.password),
+        code: ruleForm.code,
+      }
+      Login(requestData).then(response => {
+          console.log('登录结果')
+          console.log(response)
+          root.$router.push({
+            name:"Console"
+          });
+          clearCountDown();
+        }).catch(error => {});
+    });
+    // 注册
+    const register = (() => {
+      let requestData = {
+        username: ruleForm.username,
+        password: sha1(ruleForm.password),
+        code: ruleForm.code,
+        module:'register'
+        
+      };
+      Register(requestData).then(response => {
+          // console.log(response)
+          let data = response.data;
+          root.$message({
+            message: data.message,
+            type: "success"
+          });
+          toggleMenu(menuTab[0]);
+          clearCountDown();
+        })
+        .catch(error => {
+          //失败执行的代码
+        })
+    })
+
     //发送成功后倒计时，并将按钮设置激活
     const countDown = number => {
+      // 设置防抖
+      if (timer.value) {
+        clearInterval(timer.value);
+      }
       let time = number;
 
       timer.value = setInterval(() => {
@@ -253,12 +300,33 @@ export default {
         console.log(time);
         if (time === 0) {
           clearInterval(timer.value);
-          codeButtonStatus.status = false;
-          codeButtonStatus.text = "再次获取";
+          updataButtonStatus({
+            status:false,
+            text:"再次获取"
+          })
+          // codeButtonStatus.status = false;
+          // codeButtonStatus.text = "再次获取";
         } else {
           codeButtonStatus.text = `倒计时${time}秒`;
         }
       }, 1000);
+    };
+    const clearCountDown = () => {
+      // 还原验证码初始状态
+
+      updataButtonStatus({
+            status:false,
+            text:"获取验证码"
+          })
+      // codeButtonStatus.status = false;
+      // codeButtonStatus.text = "获取验证码";
+      // 清除倒计时
+      clearInterval(timer.value);
+    
+      //   const codeButtonStatus = reactive({
+      //   status: false,
+      //   text: "获取验证码"
+      // });
     };
 
     onMounted(() => {});
@@ -273,7 +341,8 @@ export default {
       codeButtonStatus,
       loginButtonStatus,
       timer,
-      countDown
+      countDown,
+      clearCountDown
     };
   }
 };

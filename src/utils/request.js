@@ -9,8 +9,11 @@ const service = axios.create({
 
 // 添加请求拦截器
 service.interceptors.request.use(function (config) {
-    // 在发送请求之前做些什么
     // console.log(config)
+    config.headers['token'] = "11111"
+    config.headers['userId'] = "222"
+    config.headers.uid = "333"
+
     return config;
 }, function (error) {
     // 对请求错误做些什么
