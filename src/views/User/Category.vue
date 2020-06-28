@@ -1,12 +1,13 @@
 <template>
-  <div>
-      console12321bbb
-  </div>
+  
 </template>
 
 <script>
 export default {
-    name:"Console"
+    name:"userCategory",
+    setup(prop){
+        
+    }
 }
 </script>
 

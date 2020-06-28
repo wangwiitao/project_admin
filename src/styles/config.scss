@@ -1,3 +1,68 @@
 // 后台界面尺寸
 // 菜单宽度
 $navMenu:250px;
+$navMenuMin:64px;
+$mainColor:#f56c6c;
+
+.el-submenu .el-menu-item {
+    font-size:14px;
+    padding-left:50px !important;
+    &.is-active {background-color: rgba(245,108,108,.2) !important;}
+}
+
+li.el-submenu  {
+    &.is-opened.is-active .el-submenu__title{background-color:$mainColor !important;}
+}
+
+
+
+// li {
+//     &.el-submenu  {
+//         &.is-active.is-opened .el-submenu__title{
+//     background-color:$mainColor !important;
+//         }
+//     }
+// }
+// Header样式
+.header-icon {
+    padding: 0 12px 0 32px;
+    svg {
+      margin-bottom: -8px;
+      font-size: 25px;
+      cursor: pointer;
+    }
+  }
+  .user-info{
+      height:100%;
+      padding:0 32px;
+      border-right:1px solid #ededed;
+      + .header-icon{
+          padding:0 28px;
+      }
+  }
+@mixin webkit($type,$value){
+    -webkit-#{$type}:$value;
+    -moz-#{$type}:$value;
+    -o-#{$type}:$value;
+    -ms-#{$type}:$value;
+    #{$type}:$value;
+}
+
+.close {
+    .el-submenu{
+       &.is-opened{
+        > .el-submenu__title{
+            background-color:$mainColor !important;
+        }
+       }
+    }
+}
+
+.el-menu--vertical{
+    .el-menu{background-color: #344a5f !important;}
+    .el-menu-item{line-height:56px;}
+    .el-menu-item:hover{
+         background-color:$mainColor !important;
+     }
+    
+ }

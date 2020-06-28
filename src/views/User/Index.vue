@@ -1,12 +1,13 @@
 <template>
-  <div>
-      console12321bbb
-  </div>
+  <div>用户列表</div>
 </template>
 
 <script>
 export default {
-    name:"Console"
+    name:"infoIndex",
+    setup(props){
+
+    }
 }
 </script>
 

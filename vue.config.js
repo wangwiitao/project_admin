@@ -10,11 +10,22 @@ module.exports = {
    * webpack配置,see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
    **/
   chainWebpack: (config) => {
+    const svgRule = config.module.rule("svg");
+    svgRule.uses.clear();
+    svgRule
+      .use("svg-sprite-loader")
+      .loader("svg-sprite-loader")
+      .options({
+        symbolId: "icon-[name]",
+        include: ["./src/icons"]
+      });
+
   },
   configureWebpack: (config) => {
     config.resolve = { // 配置解析别名
       extensions: ['.js', '.json', '.vue'],
       alias: {
+        'vue': 'vue/dist/vue.js',
         '@': path.resolve(__dirname, './src'),
         'public': path.resolve(__dirname, './public'),
         'components': path.resolve(__dirname, './src/components'),
@@ -36,7 +47,7 @@ module.exports = {
     // css预设器配置项
     loaderOptions: {
       // 如发现 css.modules 报错，请查看这里：http://www.web-jshtml.cn/#/detailed?id=12
-      scss: { 
+      scss: {
         prependData: `@import "./src/styles/main.scss";`
       }
     },
@@ -61,14 +72,14 @@ module.exports = {
     proxy: null, // 设置代理
     proxy: {
       '/devapi': {    //将www.exaple.com印射为/apis
-          target: 'http://www.web-jshtml.cn/dependenciesapi',  // 接口域名
-          secure: false,  // 如果是https接口，需要配置这个参数
-          changeOrigin: true,  //是否跨域
-          pathRewrite: {
-              '^/devapi': ''   //需要rewrite的,
-          } 
-        }             
-      },
+        target: 'http://www.web-jshtml.cn/vue_admin_api',  // 接口域名
+        secure: false,  // 如果是https接口，需要配置这个参数
+        changeOrigin: true,  //是否跨域
+        pathRewrite: {
+          '^/devapi': ''   //需要rewrite的,
+        }
+      }
+    },
     overlay: { // 全屏模式下是否显示脚本错误
       warnings: true,
       errors: true

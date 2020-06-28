@@ -254,7 +254,7 @@ export default {
         password: sha1(ruleForm.password),
         code: ruleForm.code,
       }
-      Login(requestData).then(response => {
+      root.$store.dispatch("app/login",requestData).then(response => {
           console.log('登录结果')
           console.log(response)
           root.$router.push({
@@ -262,6 +262,14 @@ export default {
           });
           clearCountDown();
         }).catch(error => {});
+      // Login(requestData).then(response => {
+      //     console.log('登录结果')
+      //     console.log(response)
+      //     root.$router.push({
+      //       name:"Console"
+      //     });
+      //     clearCountDown();
+      //   }).catch(error => {});
     });
     // 注册
     const register = (() => {
